@@ -17,6 +17,23 @@
 from urllib.request import urlopen as uReq
 from bs4 import BeautifulSoup as soup
 
+def getUrls():
+    fundUrls = []
+
+    # Opens Funds text file
+    f = open("Funds.txt","r")
+
+    #loops through every line
+    for line in f:
+
+        #removes the new line from the end of the line
+        line.strip("\n")
+        fundUrls.append(line)
+    
+    f.close()
+    
+    return fundUrls
+
 def webScrape (my_url):
     # Opens connection to page
     uClient = uReq(my_url)
@@ -59,11 +76,14 @@ def webScrape (my_url):
         # Appends the temp_row_list to page data list
         page_data_list.append(temp_row_list)
 
+def convertCsv():
+    pass
 
 def main():
+    fundUrls = getUrls
     currentUrl = "https://www.hl.co.uk/funds/fund-discounts,-prices--and--factsheets/search-results/j/jpm-uk-smaller-companies-class-c-accumulation/fund-analysis"
     
-    # Desired table from the currentUrl is stored in the 2d array page_data_list
+    # Scrape data from the URL and add to main array
     webScrape(currentUrl)
     print(page_data_list)
 
