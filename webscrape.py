@@ -19,6 +19,7 @@ from bs4 import BeautifulSoup as soup
 import os
 
 from matplotlib.pyplot import pause
+from numpy import diff
 
 def getUrls():
     fundUrlsList = []
@@ -101,12 +102,12 @@ def finalisePreviousFundCsv():
 
     # Deletes the previous fund file
     try:
-        os.remove("previousFund.csv")
+        os.remove("previousFunds.csv")
     except:
         pass
     
     # Renames currentFund.csv to previous fund
-    os.rename("currentFunds.csv","previousFund.csv")
+    os.rename("currentFunds.csv","previousFunds.csv")
 
 def initaliseCurrentFundsCsv():
     f = open("currentFunds.csv","w")
@@ -121,13 +122,54 @@ def addCurrentFundToCurrentCsv(fundList, fundName): # Adds current fund data to 
      
     for array in fundList:
         wline = array[1] + "," + fundName + "\n"
-        print(wline)
         f.write(wline)
          
     f.close()
 
+def compareCurrentPreviousCsv():
+    
+    # Initalises array to show differences in the files
+    differencesList = []
+
+    # Opens both files and converts to a list
+    currentCsv = open("currentFunds.csv","r")
+    previousCsv = open("previousFunds.csv")
+    currentList = currentCsv.readlines()
+    previousList = previousCsv.readlines()
+    currentCsv.close()
+    previousCsv.close()
+
+    # Loop the length of list 
+    for x in range(len(currentList)):
+        
+        # Compare which are different
+        if currentList[x] != previousList[x]:
+            differencesList.append([currentList[x].strip("\n")+","+previousList[x].strip("\n")])
+        
+    # returns fifferences
+    return differencesList
+
+def initaliseDifferenceCsv():
+    f = open("differences.csv","w")
+
+    Headers = "New Company Name, Previous Company Name, Fund \n"
+    f.write(Headers)
+
+    f.close
+
+def appendDifferencesToCsv(differencesList):
+    f = open("differences.csv","a")
+
+    for list in differencesList:
+        element = list[0].split(",")
+        wline = element[0] + "," + element[2] + "," + element[1] + "\n"
+        f.write(wline)
+    
+    f.close()
+
 
 def main():
+
     finalisePreviousFundCsv()
     initaliseCurrentFundsCsv()
     fundUrls = getUrls()
@@ -140,6 +182,19 @@ def main():
         # Scrape name of the fund
         fundName = scrapeFundName(fUrl)
         
+        # Adds the data for the current funds to the Current fund csv file
         addCurrentFundToCurrentCsv(page_data_list,fundName)
+    
+    # Comparing the data
+    # Compares current and previous csv file to find differences and puts into 2d array
+    differencesList = compareCurrentPreviousCsv()
+
+    # Initalises differences csv file
+    initaliseDifferenceCsv()
+
+    # Adds the differences data to the differences csv
+    appendDifferencesToCsv(differencesList)
+
+
 
 main()
