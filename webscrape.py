@@ -16,9 +16,12 @@
  
 from urllib.request import urlopen as uReq
 from bs4 import BeautifulSoup as soup
+import os
+
+from matplotlib.pyplot import pause
 
 def getUrls():
-    fundUrls = []
+    fundUrlsList = []
 
     # Opens Funds text file
     f = open("Funds.txt","r")
@@ -28,15 +31,14 @@ def getUrls():
 
         #removes the new line from the end of the line
         line.strip("\n")
-        fundUrls.append(line)
+        fundUrlsList.append(line)
     
     f.close()
-    
-    return fundUrls
+    return fundUrlsList
 
-def webScrape (my_url):
+def scrapeTableData (fund_url,page_data_list):
     # Opens connection to page
-    uClient = uReq(my_url)
+    uClient = uReq(fund_url)
 
     # Page contents into variable
     page_html = uClient.read()
@@ -75,17 +77,69 @@ def webScrape (my_url):
         
         # Appends the temp_row_list to page data list
         page_data_list.append(temp_row_list)
+    
+    return page_data_list
 
-def convertCsv():
-    pass
+def scrapeFundName(fund_url):
+
+    # Opens connection
+    uClient = uReq(fund_url)
+
+    # Saves data as variable
+    page_html = uClient.read()
+
+    uClient.close()
+
+    # Converts into soup data type
+    page_soup = soup(page_html, "html.parser")
+
+    fundName = page_soup.title.text
+    
+    return fundName
+
+def finalisePreviousFundCsv():
+
+    # Deletes the previous fund file
+    try:
+        os.remove("previousFund.csv")
+    except:
+        pass
+    
+    # Renames currentFund.csv to previous fund
+    os.rename("currentFunds.csv","previousFund.csv")
+
+def initaliseCurrentFundsCsv():
+    f = open("currentFunds.csv","w")
+
+    #Creates Header for the csv file
+    Headers = "Company Name, Fund \n"
+    f.write(Headers)
+    f.close()
+
+def addCurrentFundToCurrentCsv(fundList, fundName): # Adds current fund data to the Current Fund csv file
+    f = open("currentFunds.csv","a")
+     
+    for array in fundList:
+        wline = array[1] + "," + fundName + "\n"
+        print(wline)
+        f.write(wline)
+         
+    f.close()
+
 
 def main():
-    fundUrls = getUrls
-    currentUrl = "https://www.hl.co.uk/funds/fund-discounts,-prices--and--factsheets/search-results/j/jpm-uk-smaller-companies-class-c-accumulation/fund-analysis"
-    
-    # Scrape data from the URL and add to main array
-    webScrape(currentUrl)
-    print(page_data_list)
+    finalisePreviousFundCsv()
+    initaliseCurrentFundsCsv()
+    fundUrls = getUrls()
+    for fUrl in fundUrls:
+        page_data_list = []
 
-page_data_list = []
+        # Scrape data from the URL and add to main array 
+        page_data_list = scrapeTableData(fUrl,page_data_list)
+
+        # Scrape name of the fund
+        fundName = scrapeFundName(fUrl)
+        
+        addCurrentFundToCurrentCsv(page_data_list,fundName)
+
 main()
