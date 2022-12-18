@@ -6,7 +6,7 @@
 # Author: Adam O'Neill
 # Copyright (c) 2022 Adam O'Neill
 # -----
-# Last Modified: Sun Jan 23 2022
+# Last Modified: Sun Dec 18 2022
 # Modified By: Adam O'Neill
 # -----
 # HISTORY:
@@ -19,7 +19,6 @@ from bs4 import BeautifulSoup as soup
 import os
 
 from matplotlib.pyplot import pause
-from numpy import diff
 
 def getUrls():
     fundUrlsList = []
