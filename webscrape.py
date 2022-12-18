@@ -12,6 +12,7 @@
 # HISTORY:
 # Date      	By	Comments
 # ----------	---	---------------------------------------------------------
+# 2022-12-18	AO	All logic for fetching the information and moving the previous week information is correct
 #---------------------------------------------------------------------#
  
 from urllib.request import urlopen as uReq
@@ -125,47 +126,56 @@ def addCurrentFundToCurrentCsv(fundList, fundName): # Adds current fund data to 
          
     f.close()
 
-def compareCurrentPreviousCsv():
+def findDifferences():
+    def getDataFromFile(fileName):
+        fileData = []
+        f = open(fileName,"r")
+        
+        for line in f:
+            fileData.append(line.strip("\n"))
+        f.close()
+        return fileData
+
+    def findDifferences(fund1,fund2):
+        diffArr = []
+        for index in fund1:
+            if index not in fund2:
+                diffArr.append(index)
+        return diffArr
+
+    # Open each file and get data
+    currentFundArr = getDataFromFile("currentFunds.csv")
+    previousFundArr = getDataFromFile("previousFunds.csv")
     
-    # Initalises array to show differences in the files
-    differencesList = []
+    # Find new companies
+    newCompaniesArr = findDifferences(currentFundArr,previousFundArr)
+    oldCompaniesArr = findDifferences(previousFundArr,currentFundArr)
 
-    # Opens both files and converts to a list
-    currentCsv = open("currentFunds.csv","r")
-    previousCsv = open("previousFunds.csv")
-    currentList = currentCsv.readlines()
-    previousList = previousCsv.readlines()
-    currentCsv.close()
-    previousCsv.close()
+    return newCompaniesArr, oldCompaniesArr
 
-    # Loop the length of list 
-    for x in range(len(currentList)):
-        
-        # Compare which are different
-        if currentList[x] != previousList[x]:
-            differencesList.append([currentList[x].strip("\n")+","+previousList[x].strip("\n")])
-        
-    # returns fifferences
-    return differencesList
 
 def initaliseDifferenceCsv():
     f = open("differences.csv","w")
 
-    Headers = "New Company Name, Previous Company Name, Fund \n"
+    Headers = "Comany Name, Fund, Key \n"
     f.write(Headers)
 
     f.close
 
-def appendDifferencesToCsv(differencesList):
+def appendDifferencesToCsv(newArr,oldArr):
     f = open("differences.csv","a")
-
-    for list in differencesList:
-        element = list[0].split(",")
-        wline = element[0] + "," + element[2] + "," + element[1] + "\n"
-        f.write(wline)
     
-    f.close()
-
+    # for each item in arr prepare for presenting on csv
+    def preparePresent(f,arr,key):
+        for comp in arr:
+            comAarr = comp.split(",")
+            compName = comAarr[0]
+            compFund = comAarr[1]
+            compstr = compName + "," + compFund + "," + key + "\n"
+            f.write(compstr)
+        
+    preparePresent(f,newArr,"New")
+    preparePresent(f,oldArr,"Old")
 
 def main():
 
@@ -185,15 +195,13 @@ def main():
         addCurrentFundToCurrentCsv(page_data_list,fundName)
     
     # Comparing the data
-    # Compares current and previous csv file to find differences and puts into 2d array
-    differencesList = compareCurrentPreviousCsv()
+    # Compare companies from previous weeks
+    newCompArr, oldCompArr = findDifferences()
 
     # Initalises differences csv file
     initaliseDifferenceCsv()
 
     # Adds the differences data to the differences csv
-    appendDifferencesToCsv(differencesList)
+    appendDifferencesToCsv(newCompArr,oldCompArr)
 
-
-
-main()
+#main()
