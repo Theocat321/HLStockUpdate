@@ -204,4 +204,5 @@ def main():
     # Adds the differences data to the differences csv
     appendDifferencesToCsv(newCompArr,oldCompArr)
 
-#main()
+    print("Successfully Completed")
+main()
