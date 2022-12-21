@@ -6,7 +6,7 @@
 # Author: Adam O'Neill
 # Copyright (c) 2022 Adam O'Neill
 # -----
-# Last Modified: Sun Dec 18 2022
+# Last Modified: Wed Dec 21 2022
 # Modified By: Adam O'Neill
 # -----
 # HISTORY:
@@ -18,6 +18,9 @@
 from urllib.request import urlopen as uReq
 from bs4 import BeautifulSoup as soup
 import os
+from datetime import datetime
+import shutil
+
 
 from matplotlib.pyplot import pause
 
@@ -177,7 +180,32 @@ def appendDifferencesToCsv(newArr,oldArr):
     preparePresent(f,newArr,"New")
     preparePresent(f,oldArr,"Old")
 
+def saveCsvFiles():
+
+    # Get current date and time
+    currentDateAndTime = datetime.now()
+
+    # Create dir containing the files from before the execution
+    dir_path = os.path.dirname(os.path.realpath(__file__))  
+    dir_path = dir_path + "/csvArch"
+
+    path = os.path.join(dir_path, str(currentDateAndTime))
+
+    os.mkdir(path)
+
+    # Copy Both CSV files into this dir
+
+    shutil.copy("currentFunds.csv",f"/{path}")
+    shutil.copy("previousFunds.csv",f"/{path}")
+
+    
+
+
+
+
 def main():
+
+    saveCsvFiles()
 
     finalisePreviousFundCsv()
     initaliseCurrentFundsCsv()
@@ -192,7 +220,10 @@ def main():
         fundName = scrapeFundName(fUrl)
         
         # Adds the data for the current funds to the Current fund csv file
-        addCurrentFundToCurrentCsv(page_data_list,fundName)
+        try:
+            addCurrentFundToCurrentCsv(page_data_list,fundName)
+        except:
+            pass
     
     # Comparing the data
     # Compare companies from previous weeks
