@@ -12,6 +12,7 @@
 # HISTORY:
 # Date      	By	Comments
 # ----------	---	---------------------------------------------------------
+# 2022-12-21	AO	Added functionality for creating backups of the current and previous funds in the case of error
 # 2022-12-18	AO	All logic for fetching the information and moving the previous week information is correct
 #---------------------------------------------------------------------#
  
@@ -198,17 +199,19 @@ def saveCsvFiles():
     shutil.copy("currentFunds.csv",f"/{path}")
     shutil.copy("previousFunds.csv",f"/{path}")
 
-    
-
-
-
 
 def main():
 
+    # Create Backups of current and previous fund CSV before algorithm
     saveCsvFiles()
 
+    # Delete previous funds file
     finalisePreviousFundCsv()
+
+    #Creates file for current funds
     initaliseCurrentFundsCsv()
+
+    # Create array of fund links
     fundUrls = getUrls()
     for fUrl in fundUrls:
         page_data_list = []
@@ -225,7 +228,6 @@ def main():
         except:
             pass
     
-    # Comparing the data
     # Compare companies from previous weeks
     newCompArr, oldCompArr = findDifferences()
 
