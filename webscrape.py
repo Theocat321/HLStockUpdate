@@ -12,6 +12,7 @@
 # HISTORY:
 # Date      	By	Comments
 # ----------	---	---------------------------------------------------------
+# 2022-12-31	AO	Also saves the differences CSV file now
 # 2022-12-31	AO	Created robustness when a page cannot be fetched
 # 2022-12-31	AO	Adjusted tile names for archieved csv files
 # 2022-12-21	AO	Added functionality for creating backups of the current and previous funds in the case of error
@@ -198,10 +199,11 @@ def saveCsvFiles():
 
     os.mkdir(path)
 
-    # Copy Both CSV files into this dir
+    # Copy All  CSV files into this dir
 
     shutil.copy("currentFunds.csv",f"/{path}")
     shutil.copy("previousFunds.csv",f"/{path}")
+    shutil.copy("difference.csv",f"/{path}")
 
 
 def main():
