@@ -6,12 +6,13 @@
 # Author: Adam O'Neill
 # Copyright (c) 2022 Adam O'Neill
 # -----
-# Last Modified: Wed Dec 21 2022
+# Last Modified: Sat Dec 31 2022
 # Modified By: Adam O'Neill
 # -----
 # HISTORY:
 # Date      	By	Comments
 # ----------	---	---------------------------------------------------------
+# 2022-12-31	AO	Adjusted tile names for archieved csv files
 # 2022-12-21	AO	Added functionality for creating backups of the current and previous funds in the case of error
 # 2022-12-18	AO	All logic for fetching the information and moving the previous week information is correct
 #---------------------------------------------------------------------#
@@ -184,13 +185,15 @@ def appendDifferencesToCsv(newArr,oldArr):
 def saveCsvFiles():
 
     # Get current date and time
-    currentDateAndTime = datetime.now()
+    currentDate = datetime.now()
+
+    fullDate = str(currentDate.year) + "-" + str(currentDate.month) + "-" + str(currentDate.day) + "--" + str(currentDate.hour)
 
     # Create dir containing the files from before the execution
     dir_path = os.path.dirname(os.path.realpath(__file__))  
     dir_path = dir_path + "/csvArch"
 
-    path = os.path.join(dir_path, str(currentDateAndTime))
+    path = os.path.join(dir_path, str(fullDate))
 
     os.mkdir(path)
 
