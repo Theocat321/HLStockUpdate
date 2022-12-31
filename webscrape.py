@@ -12,6 +12,7 @@
 # HISTORY:
 # Date      	By	Comments
 # ----------	---	---------------------------------------------------------
+# 2022-12-31	AO	Created robustness when a page cannot be fetched
 # 2022-12-31	AO	Adjusted tile names for archieved csv files
 # 2022-12-21	AO	Added functionality for creating backups of the current and previous funds in the case of error
 # 2022-12-18	AO	All logic for fetching the information and moving the previous week information is correct
@@ -220,7 +221,11 @@ def main():
         page_data_list = []
 
         # Scrape data from the URL and add to main array 
-        page_data_list = scrapeTableData(fUrl,page_data_list)
+        try:
+            page_data_list = scrapeTableData(fUrl,page_data_list)
+        except:
+            print(fUrl + " - Error in fetching page")
+            break
 
         # Scrape name of the fund
         fundName = scrapeFundName(fUrl)
