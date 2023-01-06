@@ -25,9 +25,6 @@ import os
 from datetime import datetime
 import shutil
 
-
-from matplotlib.pyplot import pause
-
 def getUrls():
     fundUrlsList = []
 
@@ -203,7 +200,7 @@ def saveCsvFiles():
 
     shutil.copy("currentFunds.csv",f"/{path}")
     shutil.copy("previousFunds.csv",f"/{path}")
-    shutil.copy("difference.csv",f"/{path}")
+    shutil.copy("differences.csv",f"/{path}")
 
 
 def main():
